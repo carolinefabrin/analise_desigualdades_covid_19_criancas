@@ -274,7 +274,7 @@ base_fim$OBITO <- as.factor(base_fim$OBITO)
 
 ```
 
-
+Figura 1: Risco de óbito, internação em UTI, suporte ventilatório e intervenções diagnósticas em crianças (0-11 anos) internadas por COVID-19, segundo quintil de IDH. Brasil, 2020- maio 2021.
 ```{r echo=FALSE, fig.height= 13, fig.width= 10}
 ######## Grafico ####### 
 inter_0_11_plot <- data.frame(idade_0_11_inter_amostra[[2]][c(1,2,3)],
