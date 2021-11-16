@@ -57,6 +57,7 @@ base_inter <- base_inter %>% select(DT_SIN_PRI,
                                     DT_INTERNA,
                                     CO_MUN_RES,
                                     ID_MN_RESI,
+                                    SG_UF_NOT,
                                     AMOSTRA,
                                     UTI,
                                     SUPORT_VEN,
@@ -65,6 +66,7 @@ base_inter <- base_inter %>% select(DT_SIN_PRI,
                                     EVOLUCAO,
                                     IDADE,
                                     CASO)
+
 
 
 
@@ -85,5 +87,19 @@ base_inter <- subset(base_inter, !is.na(base_inter$CO_MUN_RES))
 #Excluindo pacientes sem evolução 
 base_inter <- subset(base_inter, !is.na(base_inter$EVOLUCAO))
 
+
+##### DIVIDINDO EM REGIÕES ####### 
+base_inter$REGIAO <- ifelse(base_inter$SG_UF_NOT %in% c("AC","AP","AM","PA","RO","RR","TO"), "NORTE",
+                     ifelse(base_inter$SG_UF_NOT %in% c("AL", "BA","CE", "MA", "PB", "PE", "PI", "RN", "SE"), "NORDESTE",
+                     ifelse(base_inter$SG_UF_NOT %in% c("DF", "MT", "MS", "GO"), "CENTRO-OESTE",
+                     ifelse(base_inter$SG_UF_NOT %in% c("ES","MG","SP", "RJ"), "SUDESTE",
+                     ifelse(base_inter$SG_UF_NOT %in% c("PR", "SC", "RS"), "SUL", NA)))))
+
+
+## Transformando data dos primeiros sintomas #
+base_inter$DT_SIN_PRI <- as.Date(base_inter$DT_SIN_PRI, format = '%d/%m/%Y')
+
+
 #Escrevendo base trabalhada
 write.csv(base_inter, "bases/base_inter_decil.csv", row.names = T)
+
