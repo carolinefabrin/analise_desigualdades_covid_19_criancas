@@ -124,7 +124,7 @@ write.csv(idade_12_18_2onda_adolesc, "bases/idade_12_18_2onda_adolesc.csv", row.
 ###########################################################################
 #Estimando relações - http://rstudio-pubs-static.s3.amazonaws.com/5752_fc41dca85dd24539bc99868697de83d0.html
 esimativa_rr <- function(variavel, base){
-  glm.regre <- glm(variavel ~ `Decil`, family="poisson"(link = "log"), data = base)
+  glm.regre <- glm(variavel ~ `Decil`+ `IDADE` + `CS_SEXO`, family="poisson"(link = "log"), data = base)
   ## Poisson model with SE estimated via robust variance estimator
   se_robusto <- coeftest(glm.regre, vcov = sandwich)
   ## Risk ratio (intercept and IC 95%) 
@@ -139,7 +139,7 @@ esimativa_rr <- function(variavel, base){
 
 
 esimativa_rr2 <- function(variavel, base){
-  glm.regre <- glm(variavel ~ `REGIAO`, family="poisson"(link = "log"), data = base)
+  glm.regre <- glm(variavel ~ `REGIAO`+ `IDADE` + `CS_SEXO`, family="poisson"(link = "log"), data = base)
   ## Poisson model with SE estimated via robust variance estimator
   se_robusto <- coeftest(glm.regre, vcov = sandwich)
   ## Risk ratio (intercept and IC 95%) 
@@ -232,16 +232,6 @@ inter <- rbind(inter_0_11, inter_12_18) %>% as.data.frame()
 ###########################################################################
 #Internados por PIB - PRIMEIRA ONDA
 
-#Calculo letalidade - PRIMEIRA ONDA
-idade_0_11_1onda_caso <- idade_0_11_1onda_cca %>%
- group_by(Decil) %>%
-  summarise(CASO = sum(CASO, na.rm = T),
-  sum(idade_0_11_1onda_cca$CASO))
-idade_0_11_1onda_caso$TAXA <- (idade_0_11_1onda_caso$CASO/ sum(idade_0_11_1onda_cca$CASO))*100
-
-idade_0_11_1onda_letalidade <- subset(idade_0_11_1onda_cca, idade_0_11_1onda_cca$OBITO == 1)
-sum(idade_0_11_1onda_letalidade$CASO)
-
 
 idade_0_11_1onda_amostra <- esimativa_rr(idade_0_11_1onda_cca$AMOSTRA, idade_0_11_1onda_cca)
 idade_0_11_1onda_raio_x <- esimativa_rr(idade_0_11_1onda_cca$DT_RAIOX, idade_0_11_1onda_cca)
@@ -252,16 +242,6 @@ idade_0_11_1onda_vent_n_inva <- esimativa_rr(idade_0_11_1onda_cca$SUPORT_VEN_N_I
 idade_0_11_1onda_uti <- esimativa_rr(idade_0_11_1onda_cca$UTI, idade_0_11_1onda_cca)
 idade_0_11_1onda_obito <- esimativa_rr(idade_0_11_1onda_cca$OBITO, idade_0_11_1onda_cca)
 
-
-#Calculo letalidade - PRIMEIRA ONDA
-idade_12_18_1onda_caso <- idade_12_18_1onda_adolesc %>%
- group_by(Decil) %>%
-  summarise(CASO = sum(CASO, na.rm = T),
-  sum(idade_12_18_1onda_adolesc$CASO))
-idade_12_18_1onda_caso$TAXA <- (idade_12_18_1onda_caso$CASO/ sum(idade_12_18_1onda_adolesc$CASO))*100
-
-idade_12_18_1onda_letalidade <- subset(idade_12_18_1onda_adolesc, idade_12_18_1onda_adolesc$OBITO == 1)
-sum(idade_12_18_1onda_letalidade$CASO)
 
 
 idade_12_18_1onda_caso <- esimativa_rr(idade_12_18_1onda_adolesc$CASO, idade_12_18_1onda_adolesc)
@@ -331,17 +311,6 @@ onda <- rbind(onda_0_11, onda_12_18) %>% as.data.frame()
 #Internados por PIB - SEGUNDA  ONDA
 
 
-#Calculo letalidade - SEGUNDA ONDA
-idade_0_11_2onda_caso <- idade_0_11_2onda_cca %>%
- group_by(Decil) %>%
-  summarise(CASO = sum(CASO, na.rm = T),
-  sum(idade_0_11_2onda_cca$CASO))
-idade_0_11_2onda_caso$TAXA <- (idade_0_11_2onda_caso$CASO/ sum(idade_0_11_2onda_cca$CASO))*100
-
-idade_0_11_2onda_letalidade <- subset(idade_0_11_2onda_cca, idade_0_11_2onda_cca$OBITO == 1)
-sum(idade_0_11_2onda_letalidade$CASO)
-
-
 idade_0_11_2onda_amostra <- esimativa_rr(idade_0_11_2onda_cca$AMOSTRA, idade_0_11_2onda_cca)
 idade_0_11_2onda_raio_x <- esimativa_rr(idade_0_11_2onda_cca$DT_RAIOX, idade_0_11_2onda_cca)
 idade_0_11_2onda_tomo <- esimativa_rr(idade_0_11_2onda_cca$DT_TOMO, idade_0_11_2onda_cca)
@@ -351,16 +320,6 @@ idade_0_11_2onda_vent_n_inva <- esimativa_rr(idade_0_11_2onda_cca$SUPORT_VEN_N_I
 idade_0_11_2onda_uti <- esimativa_rr(idade_0_11_2onda_cca$UTI, idade_0_11_2onda_cca)
 idade_0_11_2onda_obito <- esimativa_rr(idade_0_11_2onda_cca$OBITO, idade_0_11_2onda_cca)
 
-
-#Calculo letalidade - SEGUNDA ONDA
-idade_12_18_2onda_caso <- idade_12_18_2onda_adolesc %>%
- group_by(Decil) %>%
-  summarise(CASO = sum(CASO, na.rm = T),
-  sum(idade_12_18_2onda_adolesc$CASO))
-idade_12_18_2onda_caso$TAXA <- (idade_12_18_2onda_caso$CASO/ sum(idade_12_18_2onda_adolesc$CASO))*100
-
-idade_12_18_2onda_letalidade <- subset(idade_12_18_2onda_adolesc, idade_12_18_2onda_adolesc$OBITO == 1)
-sum(idade_12_18_2onda_letalidade$CASO)
 
 
 idade_12_18_2onda_amostra <- esimativa_rr(idade_12_18_2onda_adolesc$AMOSTRA, idade_12_18_2onda_adolesc)
@@ -496,15 +455,6 @@ write.csv(regiao, "bases/regiao.csv", row.names = T)
 ###########################################################################
 #Internados por REGIÕES - PRIMEIRA ONDA
 
-#Calculo INCIDENCIA - PRIMEIRA ONDA
-idade_0_11_1onda_regiao_caso <- idade_0_11_1onda_cca %>%
- group_by(REGIAO) %>%
-  summarise(CASO = sum(CASO, na.rm = T),
-  sum(idade_0_11_1onda_cca$CASO))
-idade_0_11_1onda_regiao_caso$TAXA <- (idade_0_11_1onda_regiao_caso$CASO/ sum(idade_0_11_1onda_cca$CASO))*100
-
-
-
 idade_0_11_1onda_regiao_amostra <- esimativa_rr2(idade_0_11_1onda_cca$AMOSTRA, idade_0_11_1onda_cca)
 idade_0_11_1onda_regiao_raio_x <- esimativa_rr2(idade_0_11_1onda_cca$DT_RAIOX, idade_0_11_1onda_cca)
 idade_0_11_1onda_regiao_tomo <- esimativa_rr2(idade_0_11_1onda_cca$DT_TOMO, idade_0_11_1onda_cca)
@@ -514,13 +464,6 @@ idade_0_11_1onda_regiao_vent_n_inva <- esimativa_rr2(idade_0_11_1onda_cca$SUPORT
 idade_0_11_1onda_regiao_uti <- esimativa_rr2(idade_0_11_1onda_cca$UTI, idade_0_11_1onda_cca)
 idade_0_11_1onda_regiao_obito <- esimativa_rr2(idade_0_11_1onda_cca$OBITO, idade_0_11_1onda_cca)
 
-
-#Calculo INCIDENCIA - PRIMEIRA ONDA
-idade_12_18_1onda_regiao_caso <- idade_12_18_1onda_adolesc %>%
- group_by(REGIAO) %>%
-  summarise(CASO = sum(CASO, na.rm = T),
-  sum(idade_12_18_1onda_adolesc$CASO))
-idade_12_18_1onda_regiao_caso$TAXA <- (idade_12_18_1onda_regiao_caso$CASO/ sum(idade_12_18_1onda_adolesc$CASO))*100
 
 
 
@@ -582,15 +525,6 @@ onda_regiao <- rbind(onda_regiao_0_11, onda_regiao_12_18) %>% as.data.frame()
 ###########################################################################
 #Internados por REGIÕES - SEGUNDA ONDA
 
-#Calculo INCIDENCIA - SEGUNDA ONDA
-idade_0_11_2onda_regiao_caso <- idade_0_11_2onda_cca %>%
- group_by(REGIAO) %>%
-  summarise(CASO = sum(CASO, na.rm = T),
-  sum(idade_0_11_2onda_cca$CASO))
-idade_0_11_2onda_regiao_caso$TAXA <- (idade_0_11_2onda_regiao_caso$CASO/ sum(idade_0_11_2onda_cca$CASO))*100
-
-
-
 idade_0_11_2onda_regiao_amostra <- esimativa_rr2(idade_0_11_2onda_cca$AMOSTRA, idade_0_11_2onda_cca)
 idade_0_11_2onda_regiao_raio_x <- esimativa_rr2(idade_0_11_2onda_cca$DT_RAIOX, idade_0_11_2onda_cca)
 idade_0_11_2onda_regiao_tomo <- esimativa_rr2(idade_0_11_2onda_cca$DT_TOMO, idade_0_11_2onda_cca)
@@ -599,14 +533,6 @@ idade_0_11_2onda_regiao_vent_inva <- esimativa_rr2(idade_0_11_2onda_cca$SUPORT_V
 idade_0_11_2onda_regiao_vent_n_inva <- esimativa_rr2(idade_0_11_2onda_cca$SUPORT_VEN_N_INVA, idade_0_11_2onda_cca)
 idade_0_11_2onda_regiao_uti <- esimativa_rr2(idade_0_11_2onda_cca$UTI, idade_0_11_2onda_cca)
 idade_0_11_2onda_regiao_obito <- esimativa_rr2(idade_0_11_2onda_cca$OBITO, idade_0_11_2onda_cca)
-
-
-#Calculo INCIDENCIA - SEGUNDA ONDA
-idade_12_18_2onda_regiao_caso <- idade_12_18_2onda_adolesc %>%
- group_by(REGIAO) %>%
-  summarise(CASO = sum(CASO, na.rm = T),
-  sum(idade_12_18_2onda_adolesc$CASO))
-idade_12_18_2onda_regiao_caso$TAXA <- (idade_12_18_2onda_regiao_caso$CASO/ sum(idade_12_18_2onda_adolesc$CASO))*100
 
 
 idade_12_18_2onda_regiao_amostra <- esimativa_rr2(idade_12_18_2onda_adolesc$AMOSTRA, idade_12_18_2onda_adolesc)
@@ -754,246 +680,6 @@ Tabela 6: Risco de óbito, internação em UTI, suporte ventilatório e interven
 knitr::kable(seg_onda_regiao)
 write.csv(seg_onda_regiao, "bases/seg_onda_regiao.csv", row.names = T)
 ```
-
-
-
-```{r echo=FALSE, fig.height= 13, fig.width= 10}
-# ######## Grafico #######
-# inter_0_11_plot <- data.frame(idade_0_11_inter_amostra[[2]][c(1,2,3)],
-#           idade_0_11_inter_raio_x[[2]][c(1,2,3)],
-#           idade_0_11_inter_tomo[[2]][c(1,2,3)],
-#           idade_0_11_inter_vent[[2]][c(1,2,3)],
-#           idade_0_11_inter_vent_inva[[2]][c(1,2,3)],
-#           idade_0_11_inter_vent_n_inva[[2]][c(1,2,3)],
-#           idade_0_11_inter_uti[[2]][c(1,2,3)],
-#           idade_0_11_inter_obito[[2]][c(1,2,3)])
-# names(inter_0_11_plot) <- c("Amostra",
-#                             "Amostra 2,5%",
-#                             "Amostra 97,5",
-#                             "Raio X",
-#                             "Raio X 2,5%",
-#                             "Raio X 97,5%",
-#                             "Tomografia",
-#                             "Tomografia 2,5%",
-#                             "Tomografia 97,5",
-#                             "Suporte Ventilatório",
-#                             "Suporte Ventilatório 2,5%",
-#                             "Suporte Ventilatório 97,5",
-#                             "Ventilação Invasiva",
-#                             "Ventilação Invasiva 2,5%",
-#                             "Ventilação Invasiva 97,5",
-#                             "Ventilação Não Invasiva",
-#                             "Ventilação Não Invasiva 2,5%",
-#                             "Ventilação Não Invasiva 97,5",
-#                             "UTI",
-#                             "UTI 2,5%",
-#                             "UTI 97,5",
-#                             "Óbito",
-#                             "Óbito 2,5%",
-#                             "Óbito 97,5")
-# 
-# inter_0_11_plot$Decil <- row.names(inter_0_11_plot)
-# inter_0_11_plot <- subset(inter_0_11_plot, inter_0_11_plot$Decil != "(Intercept)")
-# inter_0_11_plot[10,] <- 1
-# inter_0_11_plot$Decil <- ifelse(inter_0_11_plot$Decil == 1, "Decil1", inter_0_11_plot$Decil)
-# 
-# inter_0_11_plot$Decil <- factor(inter_0_11_plot$Decil, levels = c("Decil1",
-#                                                                  "Decil2",
-#                                                                  "Decil3",
-#                                                                  "Decil4",
-#                                                                  "Decil5",
-#                                                                  "Decil6",
-#                                                                  "Decil7",
-#                                                                  "Decil8",
-#                                                                  "Decil9",
-#                                                                  "Decil10"))
-# inter_0_11_plot <- melt(inter_0_11_plot, id.var = "Decil")
-# 
-# inter_0_11_medias <- c("Amostra",
-#                         "Raio X",
-#                         "Tomografia",
-#                         "Suporte Ventilatório",
-#                         "Ventilação Invasiva",
-#                         "Ventilação Não Invasiva",
-#                         "UTI",
-#                         "Óbito")
-# 
-# inter_0_11_plot_medias <- subset(inter_0_11_plot, inter_0_11_plot$variable %in% inter_0_11_medias)
-# 
-# cc <- scales::seq_gradient_pal("black", "gray", "Lab")(seq(0,1,length.out=10))
-# ggplot (onda_0_11_plot_medias, aes(x=value, y=1, color=Decil)) +
-#   geom_point(size = 10, alpha = 0.5)+
-#   facet_grid(variable ~.)+
-#   scale_colour_manual(values=cc)+
-#   theme_bw()+
-#   theme(axis.title.y=element_blank(),
-#         axis.text.y=element_blank(),
-#         axis.ticks.y=element_blank())+
-#   xlab("Risco Relativo")+
-#   geom_vline(xintercept = 1)
-
-
-```
-
-Figura 2: Risco de óbito, internação em UTI, suporte ventilatório e intervenções diagnósticas em adolescentes (12-18 anos) internadas por COVID-19, segundo decil do PIB. Brasil, 2020- maio 2021.
-
-
-```{r echo=FALSE, fig.height= 13, fig.width= 10}
-######## Grafico INTERNADOS ####### 
-# inter_12_18_plot <- data.frame(idade_12_18_inter_amostra[[2]][c(1,2,3)],
-#           idade_12_18_inter_raio_x[[2]][c(1,2,3)],
-#           idade_12_18_inter_tomo[[2]][c(1,2,3)],
-#           idade_12_18_inter_vent[[2]][c(1,2,3)],
-#           idade_12_18_inter_vent_inva[[2]][c(1,2,3)],
-#           idade_12_18_inter_vent_n_inva[[2]][c(1,2,3)],
-#           idade_12_18_inter_uti[[2]][c(1,2,3)],
-#           idade_12_18_inter_obito[[2]][c(1,2,3)])
-# names(inter_12_18_plot) <- c("Amostra", 
-#                             "Amostra 2,5%", 
-#                             "Amostra 97,5", 
-#                             "Raio X", 
-#                             "Raio X 2,5%", 
-#                             "Raio X 97,5%", 
-#                             "Tomografia",
-#                             "Tomografia 2,5%",
-#                             "Tomografia 97,5",
-#                             "Suporte Ventilatório",
-#                             "Suporte Ventilatório 2,5%",
-#                             "Suporte Ventilatório 97,5",
-#                             "Ventilação Invasiva",
-#                             "Ventilação Invasiva 2,5%",
-#                             "Ventilação Invasiva 97,5",
-#                             "Ventilação Não Invasiva",
-#                             "Ventilação Não Invasiva 2,5%",
-#                             "Ventilação Não Invasiva 97,5",
-#                             "UTI",
-#                             "UTI 2,5%",
-#                             "UTI 97,5",
-#                             "Óbito",
-#                             "Óbito 2,5%",
-#                             "Óbito 97,5")
-# 
-# inter_12_18_plot$Decil <- row.names(inter_12_18_plot)
-# inter_12_18_plot <- subset(inter_12_18_plot, inter_12_18_plot$Decil != "(Intercept)")
-# inter_12_18_plot[10,] <- 1
-# inter_12_18_plot$Decil <- ifelse(inter_12_18_plot$Decil == 1, "Decil1", inter_12_18_plot$Decil)
-# 
-# inter_12_18_plot$Decil <- factor(inter_12_18_plot$Decil, levels = c("Decil1",
-#                                                                  "Decil2",
-#                                                                  "Decil3",
-#                                                                  "Decil4",
-#                                                                  "Decil5",
-#                                                                  "Decil6",
-#                                                                  "Decil7",
-#                                                                  "Decil8",
-#                                                                  "Decil9",
-#                                                                  "Decil10"))
-# inter_12_18_plot <- melt(inter_12_18_plot, id.var = "Decil")
-# 
-# inter_12_18_medias <- c("Amostra",
-#                         "Raio X", 
-#                         "Tomografia",
-#                         "Suporte Ventilatório",
-#                         "Ventilação Invasiva",
-#                         "Ventilação Não Invasiva",
-#                         "UTI",
-#                         "Óbito")
-# 
-# inter_12_18_plot_medias <- subset(inter_12_18_plot, inter_12_18_plot$variable %in% inter_12_18_medias)
-# 
-# cc <- scales::seq_gradient_pal("blue", "red", "Lab")(seq(0,1,length.out=10))
-# ggplot (inter_12_18_plot_medias, aes(x=value, y=1, color=Decil)) + 
-#   geom_point(size = 10, alpha = 0.5)+
-#   facet_grid(variable ~.)+
-#   scale_colour_manual(values=cc)+
-#   theme_bw()+
-#   theme(axis.title.y=element_blank(),
-#         axis.text.y=element_blank(),
-#         axis.ticks.y=element_blank())+
-#   xlab("Risco Relativo")+
-#   geom_vline(xintercept = 1)
-
-
-```
-
-
-
-```{r echo=FALSE, fig.height= 12, fig.width= 09}
-######## Grafico OBITO Artigo ####### 
-
-# cc <- scales::seq_gradient_pal("black", "gray", "Lab")(seq(0,1,length.out=10))
-# g1 <- ggplot (obito_0_11_plot_medias, aes(x=value, y=1, color=Decil)) + 
-#     geom_point(size = 10, alpha = 0.5)+
-#     facet_grid(variable ~.)+
-#     scale_colour_manual(values=cc)+
-#     theme_bw()+
-#     theme(axis.title.y=element_blank(),
-#           axis.text.y=element_blank(),
-#           axis.ticks.y=element_blank())+
-#     xlab("Risco Relativo")+
-#     geom_vline(xintercept = 1)
-#  
-#  
-#  
-# cc <- scales::seq_gradient_pal("black", "gray", "Lab")(seq(0,1,length.out=10))
-# g2 <- ggplot (obito_12_18_plot_medias, aes(x=value, y=1, color=Decil)) + 
-#     geom_point(size = 10, alpha = 0.5)+
-#     facet_grid(variable ~.)+
-#     scale_colour_manual(values=cc)+
-#     theme_bw()+
-#     theme(axis.title.y=element_blank(),
-#           axis.text.y=element_blank(),
-#           axis.ticks.y=element_blank())+
-#     xlab("Risco Relativo")+
-#     geom_vline(xintercept = 1)
-# 
-# 
-# 
-# library(ggpubr)
-# ggpubr::ggarrange(g1,g2,labels = c("A", "B"), ncol = 2, legend = "right",common.legend = T)
-
-
-```
-
-```{r echo=FALSE, fig.height= 12, fig.width= 09}
-######## Grafico internações Artigo ####### 
-
-# cc <- scales::seq_gradient_pal("black", "gray", "Lab")(seq(0,1,length.out=10))
-# g3 <- ggplot (inter_0_11_plot_medias, aes(x=value, y=1, color=Decil)) + 
-#   geom_point(size = 10, alpha = 0.5)+
-#   facet_grid(variable ~.)+
-#   scale_colour_manual(values=cc)+
-#   theme_bw()+
-#   theme(axis.title.y=element_blank(),
-#         axis.text.y=element_blank(),
-#         axis.ticks.y=element_blank())+
-#   xlab("Risco Relativo")+
-#   geom_vline(xintercept = 1)
-# 
-# 
-# 
-# cc <- scales::seq_gradient_pal("black", "gray", "Lab")(seq(0,1,length.out=10))
-# g4 <- ggplot (inter_12_18_plot_medias, aes(x=value, y=1, color=Decil)) + 
-#   geom_point(size = 10, alpha = 0.5)+
-#   facet_grid(variable ~.)+
-#   scale_colour_manual(values=cc)+
-#   theme_bw()+
-#   theme(axis.title.y=element_blank(),
-#         axis.text.y=element_blank(),
-#         axis.ticks.y=element_blank())+
-#   xlab("Risco Relativo")+
-#   geom_vline(xintercept = 1)
-# 
-# 
-# library(ggpubr)
-# ggpubr::ggarrange(g3,g4,labels = c("A", "B"), ncol = 2, legend = "right",common.legend = T)
-# 
-# 
-# 
-
-```
-
-
 
 
 
